@@ -1,3 +1,5 @@
+package lab1;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -102,7 +104,7 @@ public class Lab1 {
         return bestDecryptionAnswer;
     }
 
-    public static void showcaseAnswers() throws IOException {
+    public static void showcaseLab1Answers() throws IOException {
         // Exercise 1
         String wordToEncrypt = "the world is yours";
         String xorKey = "illmatic";

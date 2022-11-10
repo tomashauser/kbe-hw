@@ -1,3 +1,5 @@
+package lab1;
+
 public class DecryptionAnswer {
     private final String key;
     private final String decryptedMessage;

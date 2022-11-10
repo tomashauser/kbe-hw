@@ -1,3 +1,4 @@
+import lab1.Utils;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.assertEquals;

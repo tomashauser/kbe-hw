@@ -17,7 +17,7 @@ public class Main {
     }
 
     private static void printFooter() {
-        System.out.println("=".repeat(reps + 7));
+        System.out.println("=".repeat(2 * reps + 7));
     }
 
     public static void main(String[] args) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {

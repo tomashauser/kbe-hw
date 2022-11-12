@@ -9,15 +9,22 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 public class Main {
+    static int reps = 50;
+
     private static void printNthLabHeader(int n) {
-        System.out.println("=".repeat(10) + "[lab1.Lab " + n + "]" + "=".repeat(10));
+
+        System.out.println("=".repeat(reps) + "[Lab " + n + "]" + "=".repeat(reps));
     }
 
     private static void printFooter() {
-        System.out.println("=".repeat(20 + 7));
+        System.out.println("=".repeat(reps + 7));
     }
 
     public static void main(String[] args) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        printNthLabHeader(1);
+        Lab1.showcaseLabAnswers();
+        printNthLabHeader(2);
         Lab2.showcaseLabAnswers();
+        printFooter();
     }
 }

@@ -112,27 +112,27 @@ public class Lab1 {
         String wordToEncrypt = "the world is yours";
         String xorKey = "illmatic";
         String encryptedWord = Utils.getHexFromText(encryptXor(wordToEncrypt, xorKey));
-        System.out.println("The xor encryption of '" + wordToEncrypt + "' with the key '" + xorKey + "' is '" + encryptedWord + "'.");
+        System.out.println("1. The xor encryption of '" + wordToEncrypt + "' with the key '" + xorKey + "' is '" + encryptedWord + "'.");
 
         // Exercise 2
         String encryptedMessage = "404b48484504404b48484504464d4848045d4b";
         char singleLetterKey = '$';
         String decryptedMessage = decryptSingleLetterXor(encryptedMessage, singleLetterKey);
-        System.out.println("The first line of decrypted '" + encryptedMessage + "' with a key '" + singleLetterKey + "' is '" + Utils.getFirstLine(decryptedMessage + "'."));
+        System.out.println("2. The first line of decrypted '" + encryptedMessage + "' with a key '" + singleLetterKey + "' is '" + Utils.getFirstLine(decryptedMessage + "'."));
 
         // Exercise 3, 4
         String text1 = Utils.getResourceTextWithoutNewLines(1,1);
         String decryptedText1Demo = decryptSingleLetterXor(text1).getDecryptedMessage().substring(0, 100).replace("\n", " ");
-        System.out.println("The first line of decrypted text from text1.hex based on a fitting quotient minimizing  is '" + Utils.getFirstLine(decryptedText1Demo) + "'.");
+        System.out.println("3.-4. The first line of decrypted text from text1.hex based on a fitting quotient minimizing  is '" + Utils.getFirstLine(decryptedText1Demo) + "'.");
 
         // Exercise 5
         String text2 = Utils.getResourceTextWithoutNewLines(1, 2);
         String decryptedText2Demo = decryptXorForGivenKeyLength(text2, 10).getDecryptedMessage();
-        System.out.println("The first line of decrypted text from text2.hex is '" + Utils.getFirstLine(decryptedText2Demo) + "'.");
+        System.out.println("5. The first line of decrypted text from text2.hex is '" + Utils.getFirstLine(decryptedText2Demo) + "'.");
 
         // Exercise 6
         String text3 = Utils.getResourceTextWithoutNewLines(1, 3);
         String decryptedText3Demo = decryptXor(text3, 20).getDecryptedMessage();
-        System.out.println("The first line of decrypted text from text3.hex is '" + Utils.getFirstLine(decryptedText3Demo) + "'.");
+        System.out.println("6. The first line of decrypted text from text3.hex is '" + Utils.getFirstLine(decryptedText3Demo) + "'.");
     }
 }

@@ -15,14 +15,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HexFormat;
 
-
-/**
- * I, Tomáš Hauser, understand that cryptography is easy to mess up, and
- * that I will not carelessly combine pieces of cryptographic ciphers to
- * encrypt my users' data. I will not write crypto code myself, but defer to
- * high-level libaries written by experts who took the right decisions for me,
- * like NaCL.
- */
 public class Lab2 {
     public static byte[] encrypt_aes_block(byte[] text, byte[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
@@ -127,16 +119,34 @@ public class Lab2 {
 
         for (int i = 0; i < 15; i++) {
             byte[] as = (("A").repeat(15 - i)).getBytes();
-            byte[] cipheredAsFirstBlock = Utils.getBlockSubstring(hide_secret(as), 1, 2);
+            byte[] cipheredBlock = Utils.getBlockSubstring(hide_secret(as), 1, 2);
             byte[] tmp = Arrays.copyOf(as, 16);
             for (int j = 0; j < foundSecret.length(); j++) {
                 tmp[tmp.length - 1 - i + j] = (byte) foundSecret.charAt(j);
             }
-            for (byte candidateByte = 32; candidateByte < 'z'; candidateByte++) {
+            for (byte candidateByte = ' '; candidateByte < 'z'; candidateByte++) {
                 tmp[tmp.length - 1] = candidateByte;
                 byte[] cipheredWithCandidate = hide_secret(tmp);
                 byte[] cipheredWithCandidateFirstBlock = Utils.getBlockSubstring(cipheredWithCandidate, 1, 2);
-                if (Arrays.equals(cipheredAsFirstBlock, cipheredWithCandidateFirstBlock)) {
+                if (Arrays.equals(cipheredBlock, cipheredWithCandidateFirstBlock)) {
+                    foundSecret += (char) candidateByte;
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < 15; i++) {
+            byte[] as = ("A".repeat(16 - i)).getBytes();
+            byte[] cipheredBlock = Utils.getBlockSubstring(hide_secret(as), 2, 3);
+            if (15 + i > foundSecret.length()) {
+                break;
+            }
+            byte[] tmp = (foundSecret.substring(i, 15 + i) + " ").getBytes();
+            for (byte candidateByte = ' '; candidateByte < 'z'; candidateByte++) {
+                tmp[tmp.length - 1] = candidateByte;
+                byte[] cipheredWithCandidate = hide_secret(tmp);
+                byte[] cipheredWithCandidateFirstBlock = Utils.getBlockSubstring(cipheredWithCandidate, 1, 2);
+                if (Arrays.equals(cipheredBlock, cipheredWithCandidateFirstBlock)) {
                     foundSecret += (char) candidateByte;
                     break;
                 }
@@ -147,6 +157,15 @@ public class Lab2 {
      }
 
     public static void showcaseLabAnswers() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException {
+        // Exercise 1
+        /**
+         * I, Tomáš Hauser, understand that cryptography is easy to mess up, and
+         * that I will not carelessly combine pieces of cryptographic ciphers to
+         * encrypt my users' data. I will not write crypto code myself, but defer to
+         * high-level libaries written by experts who took the right decisions for me,
+         * like NaCL.
+         */
+
         // Exercise 2
         String textToEncrypt1 = "90 miles an hour";
         String key1 = "CROSSTOWNTRAFFIC";
@@ -206,16 +225,19 @@ public class Lab2 {
         String cipherText2 = Utils.bytesToPrintableHex(cipherByUsingWelcome(toGetCiphertextFrom2));
         System.out.println("The ciphertext of \"you are an admin\" is " + cipherText2);
 
-        // 5. Dam doprostred slovo "CHRISTOPHERSON", tak bude celkova delka 13 + 14 + 21 = 48, coz je delitelne 16,
-        // takze zase stejna taktika, jen na konci vezmeme 3 bloky
+        // 5. If we put "CHRISTOPHERSON" in the middle, the total lengthg will be 13 + 14 + 21 = 48, which is divisible by 16,
+        // so we can use the same method, but we take three blocks
         String toGetCiphertextFrom3 = "Your name is Christopherson and you are an admin";
         byte[] ciphertext = cipherByUsingWelcome(toGetCiphertextFrom3);
         System.out.println("The ciphertext of \"Your name is Christopherson and you are an admin\" is '" +  Utils.bytesToPrintableHex(ciphertext) + "'.");
         String decryptionResult3 = new String(decrypt_aes_ecb(ciphertext, "RIDERSONTHESTORM".getBytes()), StandardCharsets.US_ASCII);
+        // 6.
         System.out.println("Using decrypt_aes_ecb, the plaintext of \"" +  Utils.bytesToPrintableHex(ciphertext) + "\" is '" + decryptionResult3 + "'.");
+        // 7. We essentially have a way of generating an infinite number of (plaintext, ciphertext) pairs which may
+        // enable us to crack the key that is used in the encryption.
         //=============================================================================================================
 
-        // Excercise 10
+        // Exercise 10
         // The repeating value 1 at the end is the padding
         System.out.println("Discovered key is '" + discover_key() + "'.");
     }

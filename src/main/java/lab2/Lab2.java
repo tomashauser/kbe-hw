@@ -49,8 +49,27 @@ public class Lab2 {
         return data;
     }
 
-    public static byte[] unpad(byte[] dataWithPadding) {
+    public static byte[] unpad(byte[] dataWithPadding) throws BadPaddingException {
+        return unpad(dataWithPadding, false);
+    }
+
+    public static byte[] unpad(byte[] dataWithPadding, boolean forceUnpad) throws BadPaddingException {
         byte lastByte = dataWithPadding[dataWithPadding.length - 1];
+
+        if (!forceUnpad && lastByte > 0x10) {
+            return dataWithPadding;
+        }
+
+        if (forceUnpad && lastByte == 0) {
+            throw new BadPaddingException("0 is invalid padding!");
+        }
+
+        for (int i = dataWithPadding.length - 1; i >= dataWithPadding.length - lastByte; i--) {
+            if (dataWithPadding[i] != lastByte) {
+                throw new BadPaddingException("Bad padding");
+            }
+        }
+
         return Utils.byteArraySubstring(dataWithPadding, 0, dataWithPadding.length - lastByte);
     }
 
@@ -158,13 +177,11 @@ public class Lab2 {
 
     public static void showcaseLabAnswers() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException {
         // Exercise 1
-        /**
-         * I, Tomáš Hauser, understand that cryptography is easy to mess up, and
-         * that I will not carelessly combine pieces of cryptographic ciphers to
-         * encrypt my users' data. I will not write crypto code myself, but defer to
-         * high-level libaries written by experts who took the right decisions for me,
-         * like NaCL.
-         */
+        System.out.println("1. I, Tomáš Hauser, understand that cryptography is easy to mess up, and\n" +
+                "that I will not carelessly combine pieces of cryptographic ciphers to\n" +
+                "encrypt my users' data. I will not write crypto code myself, but defer to\n" +
+                "high-level libaries written by experts who took the right decisions for me,\n" +
+                "like NaCL.");
         // Exercise 2
         String textToEncrypt1 = "90 miles an hour";
         String key1 = "CROSSTOWNTRAFFIC";
@@ -194,50 +211,47 @@ public class Lab2 {
         // Exercise 7
         String textToDecrypt = "792c2e2ec4e18e9d3a82f6724cf53848abb28d529a85790923c94b5c5abc34f50929a03550e678949542035cd669d4c66da25e59a5519689b3b4e11a870e7cea";
         String key4 = "If the mountains";
-        String decryptionResult = new String(decrypt_aes_ecb(HexFormat.of().parseHex(textToDecrypt), key4.getBytes()), StandardCharsets.US_ASCII);
+        String decryptionResult = new String(unpad(decrypt_aes_ecb(HexFormat.of().parseHex(textToDecrypt), key4.getBytes())), StandardCharsets.US_ASCII);
         System.out.println("7. The decrypted text is '" + decryptionResult + "'.");
 
         // Exercise 8
-        // 1. There are lots of repeating lines.
-        // 2. Padding.
+        System.out.println("8.1. There are lots of repeating lines. ");
+        System.out.println("8.2. Padding");
         String textToDecrypt2 = Utils.getResourceTextWithoutNewLines(2, 1);
         // 3. Swapping the first and the third line
         textToDecrypt2 = swapFirstAndThirdLine(textToDecrypt2, 64);
         String key5 = "TLKNGBTMYGNRTION";
         String decryptionResult2 = new String(decrypt_aes_ecb(HexFormat.of().parseHex(textToDecrypt2), key5.getBytes()), StandardCharsets.US_ASCII);
-        System.out.println("8. The first line of the lyrics is '" + decryptionResult2.substring(0, decryptionResult2.indexOf('\n')) + "'.");
+        System.out.println("8.4. The first line of the lyrics is '" + decryptionResult2.substring(0, decryptionResult2.indexOf('\n')) + "'.");
 
         // Exercise 9
-
         // 2.
         System.out.println("9.2. The ciphertext of welcome(\"Jim\") is " + Utils.bytesToPrintableHex(welcome("Jim")) + ".");
-
-        // 3. The string "Your name is " has 13 bytes and " and you are a user" has 19 bytes.
-        // Since the 101010... string has 16 bytes then if we add 3 bytes as a prefix and 13 bytes as a suffix,
-        // we should see the cipher text as a second block.
+        // 3.
         String toGetCiphertextFrom = "\u0010".repeat(16);
         String cipherText = Utils.bytesToPrintableHex(cipherByUsingWelcome(toGetCiphertextFrom));
-        System.out.println("9.3. The ciphertext of (10)^16 is " + cipherText);
-        // 4. The exact same logic
+        System.out.println("9.3. The string \"Your name is \" has 13 bytes and \" and you are a user\" has 19 bytes. " +
+                "Since the 101010... string has 16 bytes then if we add 3 bytes as a prefix and 13 bytes as a suffix, we should see the cipher text as a second block. " +
+                "The ciphertext of (10)^16 is " + cipherText + ".");
+        // 4.
         String toGetCiphertextFrom2 = "you are an admin";
         byte[] cipheredText2 = welcome("123" + toGetCiphertextFrom2 + "x".repeat(13));
         String cipherText2 = Utils.bytesToPrintableHex(cipherByUsingWelcome(toGetCiphertextFrom2));
-        System.out.println("9.4. The ciphertext of \"you are an admin\" is " + cipherText2);
+        System.out.println("9.4. Using the exact same logic, the ciphertext of \"you are an admin\" is " + cipherText2);
 
-        // 5. If we put "CHRISTOPHERSON" in the middle, the total lengthg will be 13 + 14 + 21 = 48, which is divisible by 16,
-        // so we can use the same method, but we take three blocks
-        String toGetCiphertextFrom3 = "9.5. Your name is Christopherson and you are an admin";
+        // 5.
+        String toGetCiphertextFrom3 = "Your name is Christopherson and you are an admin";
         byte[] ciphertext = cipherByUsingWelcome(toGetCiphertextFrom3);
-        System.out.println("The ciphertext of \"Your name is Christopherson and you are an admin\" is '" +  Utils.bytesToPrintableHex(ciphertext) + "'.");
+        System.out.println("9.5. If we put \"CHRISTOPHERSON\" in the middle, the total lengthg will be 13 + 14 + 21 = 48, which is divisible by 16," +
+                " so we can use the same method, but we take three blocks." +
+                "The ciphertext of \"Your name is Christopherson and you are an admin\" is '" +  Utils.bytesToPrintableHex(ciphertext) + "'.");
         String decryptionResult3 = new String(decrypt_aes_ecb(ciphertext, "RIDERSONTHESTORM".getBytes()), StandardCharsets.US_ASCII);
         // 6.
         System.out.println("9.6. Using decrypt_aes_ecb, the plaintext of \"" +  Utils.bytesToPrintableHex(ciphertext) + "\" is '" + decryptionResult3 + "'.");
-        // 7. We essentially have a way of generating an infinite number of (plaintext, ciphertext) pairs which may
-        // enable us to crack the key that is used in the encryption.
-        //=============================================================================================================
+        System.out.println("9.7. We essentially have a way of generating an infinite number of (plaintext, ciphertext) pairs which may enable us to crack the key that is used in the encryption." +
+                " Moreover, we can put malicious data into the database that can be used for injections for example.");
 
         // Exercise 10
-        // The repeating value 1 at the end is the padding
-        System.out.println("10. Discovered key is '" + discover_key() + "'.");
+        System.out.println("10. The repeating value 1 at the end is the padding. Discovered key is '" + discover_key() + "'.");
     }
 }

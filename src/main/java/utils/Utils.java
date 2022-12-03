@@ -124,4 +124,12 @@ public class Utils {
 
         return ret;
     }
+
+    public static byte[] getByteArrayFromString(String s) {
+        byte[] bytes = new byte[s.length()];
+        for (int i = 0; i < s.length(); i++) {
+            bytes[i] = (byte) s.charAt(i);
+        }
+        return bytes;
+    }
 }

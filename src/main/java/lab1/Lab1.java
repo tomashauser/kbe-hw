@@ -123,7 +123,7 @@ public class Lab1 {
         // Exercise 3, 4
         String text1 = Utils.getResourceTextWithoutNewLines(1,1);
         String decryptedText1Demo = decryptSingleLetterXor(text1).getDecryptedMessage().substring(0, 100).replace("\n", " ");
-        System.out.println("3.-4. The first line of decrypted text from text1.hex based on a fitting quotient minimizing  is '" + Utils.getFirstLine(decryptedText1Demo) + "'.");
+        System.out.println("3. and 4. The first line of decrypted text from text1.hex based on a fitting quotient minimizing  is '" + Utils.getFirstLine(decryptedText1Demo) + "'.");
 
         // Exercise 5
         String text2 = Utils.getResourceTextWithoutNewLines(1, 2);
